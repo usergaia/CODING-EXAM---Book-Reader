@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 
+// in-memory cache for comparing content
+const cache = {};
+
 export function useBook(textfile) {
   const [content, setContent] = useState("");
 
-  // fetch book content when textfile param changes, otherwise use the previously stored content. This avoids redundant fetches
   useEffect(() => {
     const fetchData = async () => {
+      console.log("Textfile:", textfile, "useEffect triggered!");
       const result = await getBookContent(textfile);
       setContent(result);
     };
@@ -16,10 +19,20 @@ export function useBook(textfile) {
 }
 
 async function getBookContent(textfile) {
+  // check cache first to skip redundant fetch
+  if (cache[textfile]) {
+    console.log("Skipped fetch for (cache):", textfile);
+    return cache[textfile];
+  }
+
   try {
-    const response = await fetch(`/books/${textfile}`); // fetches book from public/books dir
+    console.log("Fetching:", textfile);
+    const response = await fetch(`/books/${textfile}`); // fetches book from `public/books` dir
     const data = await response.text();
-    return data + " book end test";
+    const res = data + " book end test";
+
+    cache[textfile] = res; // store in cache
+    return res;
   } catch (err) {
     console.error("ERROR:", err);
     return "Error fetching book content";
