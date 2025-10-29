@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import "../App.css";
 import { BookCard } from "../ui/BookCard";
-import { fileToSlug } from "../util/slugConversion";
 
 export function BookLibrary({ books }) {
   return (
@@ -10,7 +9,7 @@ export function BookLibrary({ books }) {
       <div className="booklist">
         {/* loops through books to display as button cards and routing*/}
         {books.map((book) => (
-          <Link key={book} to={`/${fileToSlug(book)}`}>
+          <Link key={book} to={`/${book.replace(".txt", "")}`}>
             <BookCard textfile={book} />
           </Link>
         ))}
